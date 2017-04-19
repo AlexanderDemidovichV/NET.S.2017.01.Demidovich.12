@@ -219,9 +219,9 @@ namespace Task1
                     {
                         if (index == -1)
                         {
-                            throw new NotImplementedException();
+                            throw new InvalidOperationException("Enum not started.");
                         }
-                        throw new NotImplementedException();
+                        throw new InvalidOperationException("Enum ended.");
                     }
                     return currentElement;
                 }
