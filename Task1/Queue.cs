@@ -13,7 +13,7 @@ namespace Task1
 
         private T[] array;
 
-        private const int defaultCapacity = 4;
+        private const int DefaultCapacity = 4;
 
         private int head;
 
@@ -21,10 +21,7 @@ namespace Task1
 
         private int size;
 
-        public int Count
-        {
-            get { return this.size; }
-        }
+        public int Count => size;
 
         public ArrayQueue(int capacity)
         {
@@ -37,7 +34,7 @@ namespace Task1
         {
             if (ReferenceEquals(collection, null))
                 throw new ArgumentNullException($"{nameof(collection)} is null.");
-            array = new T[defaultCapacity];
+            array = new T[DefaultCapacity];
 
             using (IEnumerator<T> enumerator = collection.GetEnumerator())
             {
@@ -51,12 +48,12 @@ namespace Task1
             if (size == array.Length)
             {
                 int capacity = (int)(array.Length * 200L / 100L);
-                if (capacity < array.Length + defaultCapacity)
-                    capacity = this.array.Length + defaultCapacity;
+                if (capacity < array.Length + DefaultCapacity)
+                    capacity = array.Length + DefaultCapacity;
                 SetCapacity(capacity);
 
             }
-            this.array[tail] = item;
+            array[tail] = item;
             tail = (tail + 1) % array.Length;
             size++;
         }
@@ -108,9 +105,29 @@ namespace Task1
             return false;
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T[] destinationArray, int arrayIndex)
         {
-            throw new NotImplementedException();
+            if (ReferenceEquals(destinationArray, null))
+                throw new ArgumentNullException($"{nameof(destinationArray)}");
+
+            if (arrayIndex < 0 || arrayIndex > destinationArray.Length)
+                throw new ArgumentOutOfRangeException();
+
+            int length = destinationArray.Length;
+            if (length - arrayIndex < size)
+                throw new ArgumentException();
+
+            int num2 = (length - arrayIndex < size) ? (length - arrayIndex) : size;
+            if (num2 != 0)
+            {
+                int num3 = ((array.Length - head) < num2) ? (array.Length - head) : num2;
+                Array.Copy(array, head, destinationArray, arrayIndex, num3);
+                num2 -= num3;
+                if (num2 > 0)
+                {
+                    Array.Copy(array, 0, destinationArray, arrayIndex + array.Length - head, num2);
+                }
+            }
         }
 
         public T Peek()
@@ -126,30 +143,37 @@ namespace Task1
 
             if (size != 0)
             {
-                
+                if (head < tail)
+                {
+                    Array.Copy(array, head, destinationArray, 0, size);
+                    return destinationArray;
+                }
+                Array.Copy(array, head, destinationArray, 0, array.Length - head);
+                Array.Copy(array, 0, destinationArray, array.Length - head, tail);
             }
-
             return destinationArray;
         }
 
         public void TrimExcess()
         {
-            throw new NotImplementedException();
+            int num = (int)(array.Length * 0.9);
+            if (size < num)
+                SetCapacity(size);
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return new ArrayQueueEnumerator(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
 
         internal T GetElement(int index)
         {
-            throw new NotImplementedException();
+            return array[(head + index) % array.Length];
         }
 
         private void SetCapacity(int capacity)
@@ -174,15 +198,15 @@ namespace Task1
 
         private struct ArrayQueueEnumerator : IEnumerator<T>
         {
-            private ArrayQueue<T> q;
+            private readonly ArrayQueue<T> queue;
 
             private int index;
 
             private T currentElement;
 
-            internal ArrayQueueEnumerator(ArrayQueue<T> q)
+            internal ArrayQueueEnumerator(ArrayQueue<T> queue)
             {
-                this.q = q;
+                this.queue = queue;
                 index = -1;
                 currentElement = default(T);
             }
@@ -191,38 +215,32 @@ namespace Task1
             {
                 get
                 {
-                    if (this.index < 0)
+                    if (index < 0)
                     {
-                        if (this.index == -1)
+                        if (index == -1)
                         {
                             throw new NotImplementedException();
                         }
-                        else
-                        {
-                            throw new NotImplementedException();
-                        }
+                        throw new NotImplementedException();
                     }
                     return currentElement;
                 }
             }
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
                 if (index == -2)
                     return false;
                 index++;
-                if (index == q.size)
+                if (index == queue.size)
                 {
                     index = -2;
                     currentElement = default(T);
                     return false;
                 }
-                currentElement = q.GetElement(index);
+                currentElement = queue.GetElement(index);
                 return true;
             }
 

@@ -11,7 +11,7 @@ namespace Task1
 
         bool Contains(T item);
 
-        void CopyTo(T[] array, int arrayIndex);
+        void CopyTo(T[] destinationArray, int arrayIndex);
 
         T Dequeue();
 
