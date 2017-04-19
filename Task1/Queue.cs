@@ -96,7 +96,7 @@ namespace Task1
                     if (comparer.Equals(array[index], default(T)))
                         return true;
                 }
-                else if (comparer.Equals(array[index], default(T)) && comparer.Equals(item, array[index]))
+                else if (!comparer.Equals(array[index], default(T)) && comparer.Equals(item, array[index]))
                 {
                     return true;
                 }

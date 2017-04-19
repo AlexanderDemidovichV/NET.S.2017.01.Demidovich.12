@@ -25,5 +25,20 @@ namespace Task1.Tests
             Assert.AreEqual("Meteora", queue.Dequeue());
             Assert.AreEqual("MinutesToMidnight", queue.Dequeue());
         }
+
+        [Test]
+        public void QueueContains()
+        {
+            ArrayQueue<string> queue = new ArrayQueue<string>(10);
+            queue.Enqueue("HybridTheory");
+            queue.Enqueue("Meteora");
+            queue.Enqueue("MinutesToMidnight");
+            queue.Enqueue("AThousandSuns");
+            queue.Enqueue("HybridTheory");
+            queue.Enqueue("LivingThings");
+            queue.Enqueue("TheHuntingParty");
+            Assert.IsTrue(queue.Contains("AThousandSuns"));
+            Assert.IsTrue(queue.Contains("TheHuntingParty"));
+        }
     }
 }
