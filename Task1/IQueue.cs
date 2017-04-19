@@ -22,7 +22,5 @@ namespace Task1
         void TrimExcess();
 
         T Peek();
-
-        void SetCapacity(int capacity);
     }
 }

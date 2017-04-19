@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,7 +36,7 @@ namespace Task1
         public ArrayQueue(IEnumerable<T> collection)
         {
             if (ReferenceEquals(collection, null))
-                throw new ArgumentNullException($"{collection} is null.");
+                throw new ArgumentNullException($"{nameof(collection)} is null.");
             array = new T[defaultCapacity];
 
             using (IEnumerator<T> enumerator = collection.GetEnumerator())
@@ -45,24 +46,66 @@ namespace Task1
             }
         }
 
-        public T Dequeue()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Enqueue(T item)
         {
-            throw new NotImplementedException();
+            if (size == array.Length)
+            {
+                int capacity = (int)(array.Length * 200L / 100L);
+                if (capacity < array.Length + defaultCapacity)
+                    capacity = this.array.Length + defaultCapacity;
+                SetCapacity(capacity);
+
+            }
+            this.array[tail] = item;
+            tail = (tail + 1) % array.Length;
+            size++;
+        }
+
+        public T Dequeue()
+        {
+            if (size == 0)
+                throw new InvalidOperationException("Empty queue.");
+
+            T local = array[head];
+            array[head] = default(T);
+            head = (head + 1) % array.Length;
+            size--;
+            return local;
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            if (head < tail)
+                Array.Clear(array, head, size);
+            else
+            {
+                Array.Clear(array, head, array.Length - head);
+                Array.Clear(array, 0, head);
+            }
+            head = 0;
+            tail = 0;
+            size = 0;
         }
 
         public bool Contains(T item)
         {
-            throw new NotImplementedException();
+            int index = head;
+            int i = size;
+            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
+            while (i-- > 0)
+            {
+                if (comparer.Equals(item, default(T)))
+                {
+                    if (comparer.Equals(array[index], default(T)))
+                        return true;
+                }
+                else if (comparer.Equals(array[index], default(T)) && comparer.Equals(item, array[index]))
+                {
+                    return true;
+                }
+                index = index + 1 % array.Length;
+            }
+            return false;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -72,17 +115,21 @@ namespace Task1
 
         public T Peek()
         {
-            throw new NotImplementedException();
-        }
-
-        public void SetCapacity(int capacity)
-        {
-            throw new NotImplementedException();
+            if (size == 0)
+                throw new InvalidOperationException("Empty queue.");
+            return array[head];
         }
 
         public T[] ToArray()
         {
-            throw new NotImplementedException();
+            T[] destinationArray = new T[size];
+
+            if (size != 0)
+            {
+                
+            }
+
+            return destinationArray;
         }
 
         public void TrimExcess()
@@ -103,6 +150,26 @@ namespace Task1
         internal T GetElement(int index)
         {
             throw new NotImplementedException();
+        }
+
+        private void SetCapacity(int capacity)
+        {
+            T[] destinationArray = new T[capacity];
+            if (size > 0)
+            {
+                if (head < tail)
+                {
+                    Array.Copy(array, head, destinationArray, 0, size);
+                }
+                else
+                {
+                    Array.Copy(array, head, destinationArray, 0, array.Length - head);
+                    Array.Copy(array, 0, destinationArray, array.Length - head, tail);
+                }
+            }
+            array = destinationArray;
+            head = 0;
+            tail = (size == capacity) ? 0 : size;
         }
 
         private struct ArrayQueueEnumerator : IEnumerator<T>
