@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Task1
 {
-    interface IQueue<T>: IEnumerable<T>
+    public interface IQueue<T>: IEnumerable<T>
     {
         int Count { get; }
 
