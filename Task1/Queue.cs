@@ -105,31 +105,6 @@ namespace Task1
             return false;
         }
 
-        public void CopyTo(T[] destinationArray, int arrayIndex)
-        {
-            if (ReferenceEquals(destinationArray, null))
-                throw new ArgumentNullException($"{nameof(destinationArray)}");
-
-            if (arrayIndex < 0 || arrayIndex > destinationArray.Length)
-                throw new ArgumentOutOfRangeException();
-
-            int length = destinationArray.Length;
-            if (length - arrayIndex < size)
-                throw new ArgumentException();
-
-            int num2 = (length - arrayIndex < size) ? (length - arrayIndex) : size;
-            if (num2 != 0)
-            {
-                int num3 = ((array.Length - head) < num2) ? (array.Length - head) : num2;
-                Array.Copy(array, head, destinationArray, arrayIndex, num3);
-                num2 -= num3;
-                if (num2 > 0)
-                {
-                    Array.Copy(array, 0, destinationArray, arrayIndex + array.Length - head, num2);
-                }
-            }
-        }
-
         public T Peek()
         {
             if (size == 0)
